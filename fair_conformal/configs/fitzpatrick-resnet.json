@@ -1,0 +1,12 @@
+{
+	"csv_file": "resources/csv_files/segmentation.csv",
+	"dicom_dir": "/home/charles.lu/seg_dicom",
+	"mask_dir": "/home/charles.lu/seg_mask",
+	"num_slices": 32,
+	"batch_size": 1,
+	"optimizer": "adam",
+	"learning_rate": 0.000001,
+	"epochs": 300,
+	"patience": 15,
+	"filters_per_block": [16, 32, 64, 128]
+}
