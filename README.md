@@ -7,6 +7,7 @@ Published in AAAI 2022 -- https://ojs.aaai.org/index.php/AAAI/article/view/21459
 * [Tutorial on conformal prediction](http://people.eecs.berkeley.edu/~angelopoulos/blog/posts/gentle-intro/)
 * [Dataset](https://github.com/mattgroh/fitzpatrick17k)
 * [Paper](https://arxiv.org/abs/2109.04392)
+* [Predictions/weights](https://drive.google.com/drive/folders/1b15L8UM09ByeqqrXfW_UXxl3sQfNts5J?usp=share_link)
 
 Please cite our work as
 ```
