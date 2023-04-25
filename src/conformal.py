@@ -58,13 +58,12 @@ def raps_calibrate(
     )
 
     qhat = np.quantile(mask, 1 - alpha, interpolation='higher')
-#     qhat = torch.quantile(mask, 1 - alpha)
     return qhat
 
 
 # Generalized conditional quantile function.
 def raps_predict(
-        num_class, 
+        scores, 
         tau, 
         index, 
         ordered, 
@@ -74,30 +73,30 @@ def raps_predict(
         allow_zero_sets=True,
     ):
     penalty_cumsum = np.cumsum(penalty, axis=1)
-    sizes_base = ((cumsum + penalty_cumsum) <= tau).sum(axis=1) + 1
-    sizes_base = np.minimum(sizes_base, num_class)
+    sizes_base = ((cumsum + penalty_cumsum) <= tau).sum(axis=1) + 1  # 1 - 1001
+    sizes_base = np.minimum(sizes_base, scores.shape[1]) # 1-1000
 
     if randomized:
         V = np.zeros(sizes_base.shape)
         for i in range(sizes_base.shape[0]):
+            # -1 since sizes_base \in {1,...,1000}.
             j = sizes_base[i] - 1
             cumsum_ij = cumsum[i, j]
             ordered_ij = ordered[i, j]
             p = penalty_cumsum[0, j]
-            V[i] = 1 / ordered[i, j] * (tau - (cumsum_ij - ordered_ij) - p)
+            V[i] = 1 / ordered[i, j] * tau - (cumsum_i - ordered_i) - p
 
         sizes = sizes_base - (np.random.random(V.shape) >= V).astype(int)
     else:
         sizes = sizes_base
 
-    if tau >= 1.0:
+    if tau == 1.0:
         sizes[:] = cumsum.shape[1] 
         # always predict max size if alpha==0. (Avoids numerical error.)
 
     if not allow_zero_sets:
         sizes[sizes == 0] = 1 
-        # allow the user the option to never have empty sets 
-        # (will lead to incorrect coverage if 1-alpha < model's top-1 accuracy
+        # allow the user the option to never have empty sets (will lead to incorrect coverage if 1-alpha < model's top-1 accuracy
 
     return [index[i, 0:sizes[i]] for i in range(index.shape[0])]
 
@@ -116,7 +115,6 @@ def get_q_hat(calibration_scores, labels, alpha=0.05):
     
     #  get quantile with small correction for finite sample sizes
     q_hat = torch.quantile(cum_scores, np.ceil((n + 1) * (1 - alpha)) / n)
-#     q_hat = np.quantile(cum_scores, np.ceil((n + 1) * (1 - alpha)) / n)
     
     return q_hat
 

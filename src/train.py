@@ -8,13 +8,12 @@ import torch
 import torchvision
 
 from dataset import Dataset
-from resnet import resnet18, resnet34, resnet50, resnet101
 from plot import confusion_matrix
 from trainer import Trainer
 from metrics import auroc_metric, sensitivity_metric
 from utils import first
 from plot import plot_curve
-
+import resnet
 
 if __name__ == '__main__':
     START = time.perf_counter()
@@ -156,7 +155,6 @@ if __name__ == '__main__':
         torch.manual_seed(rnd)
 
         # =========================== DATA =========================== #
-        arch = getattr(torchvision.models, args.arch)
         columns = ['image', 'label', 'subgroup']
         train_ds = Dataset(
             data=train_df[columns].to_dict(orient='records'),
@@ -219,8 +217,8 @@ if __name__ == '__main__':
         )
 
         # ========================== MODEL =========================== #
-        arch = getattr(torchvision.models, args.arch)
-        model = arch(pretrained=True)
+        arch = getattr(resnet, args.arch)
+        model = arch(pretrained=True, dropout_rate=args.dropout_rate)
         if hasattr(model, 'fc'):
             model.fc = torch.nn.Linear(model.fc.in_features, len(classes))
         else:
